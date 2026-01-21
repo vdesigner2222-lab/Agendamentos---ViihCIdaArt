@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lista de Agendamentos - Estilizado e Responsivo</title>
+<link rel="shortcut icon" href="SRC/Favicom.jpeg" type="image/x-icon">
+
+<!-- Fonte chamativa do Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+<style>
+  /* Reset e base */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+    padding: 20px;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 2.8rem;
+    margin-bottom: 30px;
+    text-shadow: 0 0 8px #c33b80;
+  }
+
+  .formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 35px;
+  }
+
+  .formulario input[type="text"],
+  .formulario input[type="date"],
+  .formulario input[type="time"],
+  .formulario input[type="number"],
+  .formulario input[type="file"] {
+    padding: 14px 16px;
+    min-width: 180px;
+    flex: 1;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    background-color: rgba(255 255 255 / 0.9);
+    color: #c33b80;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  .formulario input[type="file"] {
+    padding: 8px 16px;
+  }
+  .formulario input:focus {
+    border-color: #c33b80;
+    outline: none;
+    box-shadow: 0 0 8px #c33b80aa;
+  }
+
+  .formulario button {
+    padding: 14px 26px;
+    background-color: #c33b80;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .formulario button:hover {
+    background-color: #a32865;
+  }
+
+  #TaskList {
+    list-style: none;
+    max-width: 850px;
+    margin: 0 auto 50px auto;
+  }
+
+  #TaskList li {
+    background: #fff0f6;
+    margin-bottom: 16px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgb(195 59 128 / 0.3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    position: relative;
+    color: #c33b80;
+  }
+
+  /* Informações básicas */
+  #TaskList li .task-info {
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #TaskList li .task-info span {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  #TaskList li .task-info strong {
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  /* Imagem */
+  #TaskList li .task-img {
+    max-width: 100px;
+    max-height: 80px;
+    border-radius: 14px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 3px solid #c33b80;
+    transition: transform 0.3s ease;
+  }
+  #TaskList li .task-img:hover {
+    transform: scale(1.1);
+  }
+
+  /* Botões */
+  #TaskList li .btn-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  #TaskList li button {
+    cursor: pointer;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 16px;
+    transition: background 0.3s ease;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgb(195 59 128 / 0.4);
+    color: white;
+  }
+
+  /* Botões com cores */
+  #TaskList li button.confirmar-btn {
+    background-color: #28a745;
+  }
+  #TaskList li button.confirmar-btn:hover:not(:disabled) {
+    background-color: #218838;
+  }
+  #TaskList li button.confirmar-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  #TaskList li button.editar-btn {
+    background-color: #c33b80;
+  }
+  #TaskList li button.editar-btn:hover {
+    background-color: #a32865;
+  }
+
+  #TaskList li button.salvar-btn {
+    background-color: #ff85b3;
+    color: #5c0031;
+  }
+  #TaskList li button.salvar-btn:hover {
+    background-color: #ff5a8a;
+  }
+
+  #TaskList li button.cancelar-btn {
+    background-color: #dc3545;
+  }
+  #TaskList li button.cancelar-btn:hover {
+    background-color: #b02a37;
+  }
+
+  #TaskList li button.excluir-btn {
+    background-color: #6c757d;
+  }
+  #TaskList li button.excluir-btn:hover {
+    background-color: #5a6268;
+  }
+
+  /* Texto concluído */
+  .task-title.confirmado {
+    text-decoration: underline;
+    color: #28a745;
+  }
+
+  /* Planilha */
+  #planilhaContainer {
+    display: none;
+    margin-top: 40px;
+    background: #fff0f6;
+    padding: 22px 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgb(195 59 128 / 0.35);
+    max-width: 100%;
+    overflow-x: auto;
+    color: #c33b80;
+  }
+
+  #planilhaContainer h2 {
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 1.9rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    border: 1px solid #e7b6ce;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  th {
+    background-color: #f9c6dc;
+    color: #730047;
+  }
+
+  .mes-section {
+    margin-bottom: 30px;
+  }
+
+  .mes-section tfoot td {
+    font-weight: 700;
+    background: #ffcad6;
+  }
+
+  #btnPlanilha {
+    margin: 0 auto 40px auto;
+    display: block;
+    padding: 14px 26px;
+    background-color: #c33b80;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 3px 10px #a32865cc;
+  }
+  #btnPlanilha:hover {
+    background-color: #a32865;
+  }
+
+  /* Modal imagem grande */
+  #modalImg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(195, 59, 128, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  #modalImg img {
+    max-width: 90%;
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 0 30px #a32865cc;
+  }
+
+  #modalImg button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #c33b80;
+    border: none;
+    color: white;
+    font-size: 28px;
+    padding: 8px 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  #modalImg button:hover {
+    background: #a32865;
+  }
+
+  #modalConfirmacao {
+  position: fixed;
+  z-index: 99999;
+  background-color: rgba(0, 0, 0, 0.6);
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-box {
+  background: #fff0f6;
+  border: 3px solid #c33b80;
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 0 20px #a32865aa;
+  color: #c33b80;
+  max-width: 320px;
+  font-weight: 600;
+}
+
+.botoes-popup {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.botoes-popup button {
+  background-color: #c33b80;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.botoes-popup button:hover {
+  background-color: #a32865;
+}
+
+
+  /* Estilo modo edição: inputs inline e alinhados */
+  #TaskList li input[type="text"],
+  #TaskList li input[type="date"],
+  #TaskList li input[type="time"],
+  #TaskList li input[type="number"],
+  #TaskList li input[type="file"] {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid #c33b80;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #c33b80;
+    background: #fff0f6;
+    min-width: 120px;
+    max-width: 200px;
+    transition: box-shadow 0.3s ease;
+  }
+  #TaskList li input[type="file"] {
+    max-width: 180px;
+  }
+  #TaskList li input[type="text"]:focus,
+  #TaskList li input[type="date"]:focus,
+  #TaskList li input[type="time"]:focus,
+  #TaskList li input[type="number"]:focus,
+  #TaskList li input[type="file"]:focus {
+    outline: none;
+    box-shadow: 0 0 8px #c33b80aa;
+  }
+
+  /* Ajustes imagem e botões em modo edição (linha alinhada) */
+  #TaskList li.editing {
+    align-items: center;
+  }
+  #TaskList li.editing .btn-group {
+    gap: 8px;
+  }
+
+  /* Responsividade */
+  @media (max-width: 600px) {
+    body {
+      padding: 16px 12px;
+    }
+
+    .formulario {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .formulario input,
+    .formulario button {
+      width: 100%;
+    }
+
+    #TaskList li {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+      gap: 14px;
+    }
+
+    #TaskList li .btn-group {
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    #TaskList li .task-img {
+      max-width: 100%;
+      max-height: 180px;
+      border-radius: 18px;
+      margin-top: 0 !important;
+      border: 3px solid #c33b80;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    /* Modo edição inputs com largura 100% e centralizados */
+    #TaskList li input[type="text"],
+    #TaskList li input[type="date"],
+    #TaskList li input[type="time"],
+    #TaskList li input[type="number"],
+    #TaskList li input[type="file"] {
+      max-width: 100% !important;
+      min-width: auto !important;
+    }
+
+    #TaskList li .task-info {
+      width: 100%;
+    }
+  }
+
+  #planilhaContainer table button {
+  padding: 8px 14px;
+  margin: 0 4px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 8px rgb(195 59 128 / 0.4);
+  color: white;
+}
+
+/* Botão Editar */
+#planilhaContainer table button:nth-child(1) {
+  background-color: #c33b80;
+}
+#planilhaContainer table button:nth-child(1):hover {
+  background-color: #a32865;
+}
+
+/* Botão Excluir */
+#planilhaContainer table button:nth-child(2) {
+  background-color: #6c757d;
+}
+#planilhaContainer table button:nth-child(2):hover {
+  background-color: #5a6268;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  #planilhaContainer table button {
+    padding: 10px 18px;
+    font-size: 1rem;
+    margin: 5px;
+  }
+}
+</style>
+</head>
+<body>
+  <h1>꧁༺ Lista de Agendamentos ༻꧂</h1>
+
+  <div class="formulario">
+    <input type="text" id="TaskInput" placeholder="Nome do(a) Cliente..." />
+    <input type="date" id="DataInput" />
+    <input type="time" id="DataHour" />
+    <input type="number" id="ValorInput" placeholder="Valor (R$)" min="0" step="0.01" />
+    <input type="file" id="ImageInput" accept="image/*" />
+    <button id="btnAdd" onclick="adicionarAgendamento()">Adicionar Agendamento</button>
+  </div>
+
+  <ul id="TaskList"></ul>
+
+  <button id="btnPlanilha" onclick="mostrarPlanilha()">📊 Ver Planilha de Ganhos</button>
+
+  <div id="planilhaContainer"></div>
+
+  <!-- Modal imagem -->
+  <div id="modalImg">
+    <button onclick="fecharModal()">×</button>
+    <img src="" alt="Imagem ampliada" />
+  </div>
+
+  <div id="modalConfirmacao" style="display: none;">
+    <div class="popup-box">
+      <p id="mensagemPopup">Tem certeza?</p>
+      <div class="botoes-popup">
+        <button id="btnConfirmarPopup">Sim</button>
+        <button onclick="fecharPopup()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const TaskList = document.getElementById("TaskList");
+const TaskInput = document.getElementById("TaskInput");
+const DataInput = document.getElementById("DataInput");
+const DataHour = document.getElementById("DataHour");
+const ValorInput = document.getElementById("ValorInput");
+const ImageInput = document.getElementById("ImageInput");
+const planilhaContainer = document.getElementById("planilhaContainer");
+const modalImg = document.getElementById("modalImg");
+const modalImgTag = modalImg.querySelector("img");
+
+let agendamentos = JSON.parse(localStorage.getItem("agendamentos")) || [];
+
+function salvarLocalStorage() {
+  localStorage.setItem("agendamentos", JSON.stringify(agendamentos));
+}
+
+function formatarData(dataStr) {
+  const data = new Date(dataStr);
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const ano = data.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+function adicionarAgendamento() {
+  const nome = TaskInput.value.trim();
+  const data = DataInput.value;
+  const hora = DataHour.value;
+  const valor = parseFloat(ValorInput.value);
+  const imagemFile = ImageInput.files[0];
+
+  if (!nome || !data || !hora || isNaN(valor)) {
+    alert("Preencha todos os campos obrigatórios!");
+    return;
+  }
+
+  if (imagemFile) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      salvarAgendamento(nome, data, hora, valor, reader.result);
+      limparCampos();
+    };
+    reader.readAsDataURL(imagemFile);
+  } else {
+    salvarAgendamento(nome, data, hora, valor, null);
+    limparCampos();
+  }
+}
+
+function salvarAgendamento(nome, data, hora, valor, imagem) {
+  const novo = {
+    id: Date.now(),
+    nome,
+    data,
+    hora,
+    valor,
+    imagem,
+    confirmado: false,
+    editando: false,
+  };
+  agendamentos.push(novo);
+  salvarLocalStorage();
+  renderizarLista();
+}
+
+function limparCampos() {
+  TaskInput.value = "";
+  DataInput.value = "";
+  DataHour.value = "";
+  ValorInput.value = "";
+  ImageInput.value = "";
+}
+
+function renderizarLista() {
+  TaskList.innerHTML = "";
+  agendamentos.forEach((agendamento) => {
+    if (agendamento.confirmado) return;
+
+    const li = document.createElement("li");
+    li.dataset.id = agendamento.id;
+
+    if (agendamento.editando) {
+      li.classList.add("editing");
+      li.innerHTML = `
+        <input type="text" class="edit-nome" value="${agendamento.nome}" placeholder="Nome do cliente" />
+        <input type="date" class="edit-data" value="${agendamento.data}" />
+        <input type="time" class="edit-hora" value="${agendamento.hora}" />
+        <input type="number" class="edit-valor" value="${agendamento.valor.toFixed(2)}" step="0.01" min="0" />
+        <input type="file" class="edit-imagem" accept="image/*" />
+        <div class="btn-group">
+          <button class="salvar-btn">Salvar</button>
+          <button class="cancelar-btn">Cancelar</button>
+        </div>
+      `;
+
+      li.querySelector(".salvar-btn").onclick = () => {
+        const novoNome = li.querySelector(".edit-nome").value.trim();
+        const novaData = li.querySelector(".edit-data").value;
+        const novaHora = li.querySelector(".edit-hora").value;
+        const novoValor = parseFloat(li.querySelector(".edit-valor").value);
+        const inputImg = li.querySelector(".edit-imagem");
+
+        if (!novoNome || !novaData || !novaHora || isNaN(novoValor)) {
+          alert("Preencha todos os campos!");
+          return;
+        }
+
+        agendamento.nome = novoNome;
+        agendamento.data = novaData;
+        agendamento.hora = novaHora;
+        agendamento.valor = novoValor;
+
+        if (inputImg.files[0]) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            agendamento.imagem = reader.result;
+            agendamento.editando = false;
+            salvarLocalStorage();
+            renderizarLista();
+            renderizarPlanilha();
+          };
+          reader.readAsDataURL(inputImg.files[0]);
+        } else {
+          agendamento.editando = false;
+          salvarLocalStorage();
+          renderizarLista();
+          renderizarPlanilha();
+        }
+      };
+
+      li.querySelector(".cancelar-btn").onclick = () => {
+        agendamento.editando = false;
+        renderizarLista();
+      };
+    } else {
+      const infoDiv = document.createElement("div");
+      infoDiv.className = "task-info";
+
+      const nomeStrong = document.createElement("strong");
+      nomeStrong.textContent = agendamento.nome;
+
+      const detalhesSpan = document.createElement("span");
+      detalhesSpan.textContent = `${formatarData(agendamento.data)} às ${agendamento.hora} - R$ ${agendamento.valor.toFixed(2)}`;
+
+      infoDiv.appendChild(nomeStrong);
+      infoDiv.appendChild(detalhesSpan);
+
+      li.appendChild(infoDiv);
+
+      if (agendamento.imagem) {
+        const img = document.createElement("img");
+        img.src = agendamento.imagem;
+        img.alt = `Foto de ${agendamento.nome}`;
+        img.className = "task-img";
+        img.onclick = () => abrirModal(img.src);
+        li.appendChild(img);
+      }
+
+      const btnGroup = document.createElement("div");
+      btnGroup.className = "btn-group";
+
+      const btnConfirmar = document.createElement("button");
+      btnConfirmar.textContent = "Concluído";
+      btnConfirmar.className = "confirmar-btn";
+      btnConfirmar.onclick = () => confirmarAgendamento(agendamento.id);
+
+      const btnEditar = document.createElement("button");
+      btnEditar.textContent = "Editar";
+      btnEditar.className = "editar-btn";
+      btnEditar.onclick = () => {
+        agendamento.editando = true;
+        renderizarLista();
+      };
+
+      const btnExcluir = document.createElement("button");
+      btnExcluir.textContent = "Excluir";
+      btnExcluir.className = "excluir-btn";
+      btnExcluir.onclick = () => confirmarExclusao(agendamento.id);
+
+      btnGroup.appendChild(btnConfirmar);
+      btnGroup.appendChild(btnEditar);
+      btnGroup.appendChild(btnExcluir);
+
+      li.appendChild(btnGroup);
+    }
+
+    TaskList.appendChild(li);
+  });
+}
+
+let idParaAcao = null;
+let acaoTipo = "";
+
+function confirmarExclusao(id) {
+  idParaAcao = id;
+  acaoTipo = "excluir";
+  document.getElementById("mensagemPopup").textContent = "Deseja realmente excluir este agendamento?";
+  document.getElementById("modalConfirmacao").style.display = "flex";
+}
+
+function confirmarAgendamento(id) {
+  idParaAcao = id;
+  acaoTipo = "concluir";
+  document.getElementById("mensagemPopup").textContent = "Marcar este agendamento como concluído?";
+  document.getElementById("modalConfirmacao").style.display = "flex";
+}
+
+function fecharPopup() {
+  document.getElementById("modalConfirmacao").style.display = "none";
+  idParaAcao = null;
+  acaoTipo = "";
+}
+
+document.getElementById("btnConfirmarPopup").onclick = () => {
+  if (acaoTipo === "excluir") {
+    agendamentos = agendamentos.filter((a) => a.id !== idParaAcao);
+  } else if (acaoTipo === "concluir") {
+    const index = agendamentos.findIndex((a) => a.id === idParaAcao);
+    if (index >= 0) agendamentos[index].confirmado = true;
+  }
+
+  salvarLocalStorage();
+  renderizarLista();
+  renderizarPlanilha();
+  fecharPopup();
+};
+
+function abrirModal(src) {
+  modalImgTag.src = src;
+  modalImg.style.display = "flex";
+}
+function fecharModal() {
+  modalImg.style.display = "none";
+  modalImgTag.src = "";
+}
+
+function editarConcluido(id) {
+  const agendamento = agendamentos.find((a) => a.id === id);
+  if (!agendamento) return;
+  agendamento.confirmado = false;
+  renderizarLista();
+  renderizarPlanilha();
+  salvarLocalStorage();
+}
+
+function excluirConcluido(id) {
+  const confirmar = confirm("Tem certeza que deseja excluir este agendamento? Esta ação é irreversível!");
+  if (!confirmar) return;
+  agendamentos = agendamentos.filter((a) => a.id !== id);
+  salvarLocalStorage();
+  renderizarPlanilha();
+}
+
+function toggleTabela(id) {
+  const tabela = document.getElementById(`tabela-${id}`);
+  if (tabela.style.display === "none") {
+    tabela.style.display = "table";
+  } else {
+    tabela.style.display = "none";
+  }
+}
+
+function renderizarPlanilha() {
+  const confirmados = agendamentos.filter((a) => a.confirmado);
+  if (confirmados.length === 0) {
+    planilhaContainer.style.display = "none";
+    planilhaContainer.innerHTML = "";
+    return;
+  }
+
+  const grupos = {};
+  confirmados.forEach(({ nome, valor, data, id }) => {
+    const dt = new Date(data);
+    const mesAno = dt.toLocaleString("pt-BR", { month: "long", year: "numeric" });
+    if (!grupos[mesAno]) grupos[mesAno] = [];
+    grupos[mesAno].push({ nome, valor, id });
+  });
+
+  let html = '<h2>Planilha de Ganhos por Mês</h2>';
+  let count = 0;
+
+  for (const mesAno in grupos) {
+    const id = count++;
+    const items = grupos[mesAno];
+    const soma = items.reduce((acc, cur) => acc + cur.valor, 0);
+    const media = soma / items.length;
+
+    html += `<div class="mes-section">
+      <h3 style="color:#a32865; cursor:pointer;" onclick="toggleTabela(${id})">${mesAno.charAt(0).toUpperCase() + mesAno.slice(1)}</h3>
+      <table id="tabela-${id}" style="display: table;">
+      <thead><tr><th>Cliente</th><th>Valor (R$)</th><th>Ações</th></tr></thead><tbody>`;
+
+    items.forEach(({ nome, valor, id }) => {
+      html += `<tr>
+        <td>${nome}</td>
+        <td>${valor.toFixed(2)}</td>
+        <td>
+          <button onclick="editarConcluido(${id})">Editar</button>
+          <button onclick="excluirConcluido(${id})">Excluir</button>
+        </td>
+      </tr>`;
+    });
+
+    html += `</tbody><tfoot>
+        <tr><td>Total</td><td colspan="2">R$ ${soma.toFixed(2)}</td></tr>
+        <tr><td>Média</td><td colspan="2">R$ ${media.toFixed(2)}</td></tr>
+      </tfoot></table></div>`;
+  }
+
+  planilhaContainer.innerHTML = html;
+}
+
+function mostrarPlanilha() {
+  if (planilhaContainer.style.display === "block") {
+    planilhaContainer.style.display = "none";
+    btnPlanilha.textContent = "📊 Ver Planilha de Ganhos";
+  } else {
+    renderizarPlanilha();
+    planilhaContainer.style.display = "block";
+    btnPlanilha.textContent = "❌ Fechar Planilha";
+  }
+}
+
+renderizarLista();
+
+  
+</script>
+</body>
+</html>
